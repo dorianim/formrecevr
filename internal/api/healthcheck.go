@@ -7,7 +7,7 @@ import (
 )
 
 // GET /api/v1/accounts
-func Healtcheck(router *gin.RouterGroup) {
+func Healthcheck(router *gin.RouterGroup) {
 	router.GET("/healthcheck", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "OK")
 	})

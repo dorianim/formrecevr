@@ -14,6 +14,8 @@ require (
 	github.com/rs/zerolog v1.25.0
 	github.com/sevlyar/go-daemon v0.1.5 // indirect
 	github.com/spf13/cobra v1.2.1
+	github.com/stretchr/testify v1.7.0
+	github.com/tidwall/gjson v1.9.4 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/urfave/cli v1.22.5 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect

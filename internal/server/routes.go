@@ -18,6 +18,6 @@ func registerRoutes(router *gin.Engine) {
 
 	apiV1 := router.Group("/api/v1")
 	{
-		api.Healtcheck(apiV1)
+		api.Healthcheck(apiV1)
 	}
 }
