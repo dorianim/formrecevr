@@ -9,9 +9,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type TargetConfig struct {
+	Enabled     bool
+	Template    string
+	ShoutrrrURL string
+}
+
 type FormConfig struct {
 	Enabled bool
-	Targets []string
+	Targets []*TargetConfig
 }
 
 type Config struct {
@@ -20,7 +26,7 @@ type Config struct {
 		Port int
 	}
 
-	Forms map[string]FormConfig
+	Forms map[string]*FormConfig
 }
 
 var conf *Config = nil

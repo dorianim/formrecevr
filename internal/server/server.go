@@ -13,6 +13,7 @@ func Start() {
 	config := config.GetConfig()
 	router := gin.New()
 
+	router.Use(gin.Logger())
 	registerRoutes(router)
 
 	server := &http.Server{
