@@ -41,7 +41,7 @@ func NewConfig(configFilePath string) error {
 	} else if os.IsNotExist(err) {
 		log.Printf("Config %s empty, writing default to file", configFilePath)
 		conf = DefaultConfig()
-		return writeConfigToFile(configFilePath, conf)
+		return WriteConfigToFile(configFilePath, conf)
 	}
 
 	err = yaml.Unmarshal(content, &conf)
@@ -56,16 +56,9 @@ func GetConfig() *Config {
 	return conf
 }
 
-func writeConfigToFile(configFilePath string, conf *Config) error {
-	d, err := yaml.Marshal(&conf)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(filepath.Dir(configFilePath), os.ModePerm)
-	if err != nil {
-		return err
-	}
+func WriteConfigToFile(configFilePath string, conf *Config) error {
+	d, _ := yaml.Marshal(&conf)
+	os.MkdirAll(filepath.Dir(configFilePath), os.ModePerm)
 
 	f, err := os.OpenFile(configFilePath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -73,10 +66,7 @@ func writeConfigToFile(configFilePath string, conf *Config) error {
 	}
 
 	f.Truncate(0)
-	_, err = f.Write(d)
-	if err != nil {
-		return err
-	}
+	f.Write(d)
 
 	f.Close()
 	return nil

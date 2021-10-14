@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -16,6 +17,16 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("invalid config", func(t *testing.T) {
 		e := config.NewConfig("../../testdata/invalid-config.yml")
+		assert.NotNil(t, e)
+	})
+
+	t.Run("unreadable config", func(t *testing.T) {
+		tmpfile, err := ioutil.TempFile("", "unreadable-config.yml")
+		assert.Nil(t, err)
+		err = os.Chmod(tmpfile.Name(), 0000)
+		assert.Nil(t, err)
+
+		e := config.NewConfig(tmpfile.Name())
 		assert.NotNil(t, e)
 	})
 
@@ -42,26 +53,17 @@ func TestGetConfig(t *testing.T) {
 	e := config.NewConfig("../../testdata/config.yml")
 	assert.Nil(t, e)
 
-	c := config.GetConfig()
-	assert.IsType(t, new(config.Config), c)
-	assert.IsType(t, new(map[string]*config.FormConfig), &c.Forms)
+	assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+}
 
-	assert.Equal(t, c.Listen.Host, "0.0.0.0")
-	assert.Equal(t, c.Listen.Port, 8088)
+func TestWriteConfigToFile(t *testing.T) {
+	t.Run("wrong file permissions", func(t *testing.T) {
+		tmpfile, err := ioutil.TempFile("", "unreadable-config.yml")
+		assert.Nil(t, err)
+		err = os.Chmod(tmpfile.Name(), 0000)
+		assert.Nil(t, err)
 
-	form1id := "6db3fc2c-9220-4fd1-8e40-c900c060ca9e"
-	assert.IsType(t, new(config.FormConfig), c.Forms[form1id])
-
-	assert.True(t, c.Forms[form1id].Enabled)
-	assert.IsType(t, new([]*config.TargetConfig), &c.Forms[form1id].Targets)
-
-	targets1 := c.Forms[form1id].Targets
-	assert.Len(t, targets1, 2)
-	assert.False(t, targets1[0].Enabled)
-	assert.Equal(t, targets1[0].Template, "./templates/default.html")
-	assert.Equal(t, targets1[0].ShoutrrrURL, "invalid://invalid")
-
-	assert.True(t, targets1[1].Enabled)
-	assert.Equal(t, targets1[1].Template, "./templates/default.html")
-	assert.Equal(t, targets1[1].ShoutrrrURL, "telegram://<token>@telegram?channels=<channel>&ParseMode=none")
+		err = config.WriteConfigToFile(tmpfile.Name(), nil)
+		assert.NotNil(t, err)
+	})
 }
