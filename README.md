@@ -12,6 +12,9 @@
     <a href="https://github.com/dorianim/formrecevr/actions/workflows/release.yml">
         <img src="https://github.com/dorianim/formrecevr/actions/workflows/release.yml/badge.svg" alt="Badge release image" />
     </a>
+    <a href="https://github.com/dorianim/formrecevr/actions/workflows/tests.yml">
+        <img src="https://github.com/dorianim/formrecevr/actions/workflows/tests.yml/badge.svg" alt="Badge tests">
+    </a>
     <a href="https://hub.docker.com/r/dorianim/formrecevr">
         <img src="https://img.shields.io/docker/pulls/dorianim/formrecevr.svg" alt="Docker pulls" />
     </a>
