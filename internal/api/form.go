@@ -10,11 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ResponseBody is the body of a response
 type ResponseBody struct {
 	Message string
 }
 
-// POST /api/v1/accounts
+// PostForm registers and handles the route POST /api/v1/accounts
 func PostForm(router *gin.RouterGroup) {
 	router.POST("/:formID", func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")

@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Start starts the server
 func Start() {
 	config := config.GetConfig()
 	router := gin.New()

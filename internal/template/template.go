@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// ExecuteTemplate parses a template, fills it and returns the result
 func ExecuteTemplate(templateFilePath string, data interface{}) (string, error) {
 	parsedTemplate, err := template.New(path.Base(templateFilePath)).Funcs(template.FuncMap{
 		"join": strings.Join,

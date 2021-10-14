@@ -10,22 +10,26 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// TargetConfig is the config of a shoutrrr target
 type TargetConfig struct {
 	Enabled     bool
 	Template    string
 	ShoutrrrURL string
 }
 
+// FormConfig is the config of a form
 type FormConfig struct {
 	Enabled bool
 	Targets []*TargetConfig
 }
 
+// ListenConfig is for the server
 type ListenConfig struct {
 	Host string
 	Port int
 }
 
+// Config is the type which contains all above sub-configs
 type Config struct {
 	Listen ListenConfig
 	Forms  map[string]*FormConfig
@@ -33,6 +37,7 @@ type Config struct {
 
 var conf *Config = DefaultConfig()
 
+// NewConfig reads a configfile, parses it and puts it into conf
 func NewConfig(configFilePath string) error {
 	conf = nil
 	content, err := ioutil.ReadFile(configFilePath)
@@ -52,10 +57,12 @@ func NewConfig(configFilePath string) error {
 	return nil
 }
 
+// GetConfig returns the config
 func GetConfig() *Config {
 	return conf
 }
 
+// WriteConfigToFile writes a config to a file
 func WriteConfigToFile(configFilePath string, conf *Config) error {
 	d, _ := yaml.Marshal(&conf)
 	os.MkdirAll(filepath.Dir(configFilePath), os.ModePerm)
@@ -72,6 +79,7 @@ func WriteConfigToFile(configFilePath string, conf *Config) error {
 	return nil
 }
 
+// DefaultConfig returns the default config
 func DefaultConfig() *Config {
 	return &Config{
 		Listen: ListenConfig{
@@ -93,6 +101,7 @@ func DefaultConfig() *Config {
 	}
 }
 
+// SetConfig sets the config to c
 func SetConfig(c *Config) {
 	conf = c
 }

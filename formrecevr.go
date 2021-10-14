@@ -35,9 +35,11 @@ func main() {
 	}
 }
 
+// PreRun is currently unused
 func PreRun(cmd *cobra.Command, _ []string) {
 }
 
+// Run starts the server
 func Run(c *cobra.Command, names []string) {
 	if err := config.NewConfig("./config.yml"); err != nil {
 		log.Fatalf("Error reading config.yml: %v", err)
