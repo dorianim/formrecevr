@@ -15,7 +15,7 @@ type ResponseBody struct {
 	Message string
 }
 
-// PostForm registers and handles the route POST /api/v1/accounts
+// PostForm registers the route POST /api/v1/accounts
 func PostForm(router *gin.RouterGroup) {
 	router.POST("/:formID", func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
