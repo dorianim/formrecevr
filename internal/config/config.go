@@ -92,3 +92,7 @@ func DefaultConfig() *Config {
 		},
 	}
 }
+
+func SetConfig(c *Config) {
+	conf = c
+}

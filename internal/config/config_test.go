@@ -67,3 +67,9 @@ func TestWriteConfigToFile(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestSetConfig(t *testing.T) {
+	config.SetConfig(nil)
+	config.SetConfig(config.DefaultConfig())
+	assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+}
