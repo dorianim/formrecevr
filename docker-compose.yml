@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  formrecevr:
+    build: "."
+    container_name: "formrecevr"
+    restart: "unless-stopped"
+    stdin_open: true
+    tty: true
+    volumes:
+      - "./:/config"
+    ports:
+      - 8088:8088
+    environment:
+      FORMRECEVR_CONFIG_FILE_PATH: "/config/config.yml"

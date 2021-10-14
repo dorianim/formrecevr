@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/dorianim/formrecevr/internal/config"
 	"github.com/dorianim/formrecevr/internal/server"
@@ -41,7 +42,12 @@ func PreRun(cmd *cobra.Command, _ []string) {
 
 // Run starts the server
 func Run(c *cobra.Command, names []string) {
-	if err := config.NewConfig("./config.yml"); err != nil {
+	configFilePath := os.Getenv("FORMRECEVR_CONFIG_FILE_PATH")
+	if configFilePath == "" {
+		configFilePath = "/config/config.yml"
+	}
+
+	if err := config.NewConfig(configFilePath); err != nil {
 		log.Fatalf("Error reading config.yml: %v", err)
 	}
 
