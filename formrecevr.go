@@ -22,7 +22,7 @@ func NewRootCommand() *cobra.Command {
 		Short: "Receives form data via an http API and forwards them",
 		Long: `
 	Formrecevr receives form data via an http API and forwards them using shoutrrr
-	More information is avaiable at: https://github.com/dorianim/formrecevr
+	More information is available at: https://github.com/dorianim/formrecevr
 	`,
 		Run:    Run,
 		PreRun: PreRun,
