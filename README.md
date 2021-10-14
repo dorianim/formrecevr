@@ -1,5 +1,3 @@
-# UNDER HEAVY DEVELOPMENT - NOT USABLE YET!
-
 <h1 align="center">
     Formrecevr
 </h1>
