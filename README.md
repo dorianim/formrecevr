@@ -15,6 +15,9 @@
     <a href="https://hub.docker.com/r/dorianim/formrecevr">
         <img src="https://img.shields.io/docker/pulls/dorianim/formrecevr.svg" alt="Docker pulls" />
     </a>
+    <a href="https://goreportcard.com/report/github.com/dorianim/formrecevr">
+        <img src="https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=flat" alt="Go report" />
+    </a>
 </p>
 
 Formrecevr (pronunced "Form receiver") is a simple and lightweight from receiver backend primarily designed (but not limited to) static websites. It is inspired by [formspree.io](formspree.io) but it is simpler, self-hosted and doesn't have a frontend.
