@@ -39,6 +39,6 @@ func PreRun(cmd *cobra.Command, _ []string) {
 }
 
 func Run(c *cobra.Command, names []string) {
-	config.Init()
+	config.NewConfig("./config.yml")
 	server.Start()
 }

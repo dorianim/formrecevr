@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewApiTest() (app *gin.Engine, router *gin.RouterGroup) {
+func NewApiTest(groupPath string) (app *gin.Engine, router *gin.RouterGroup) {
 	gin.SetMode(gin.TestMode)
 	app = gin.New()
-	router = app.Group("/api/v1")
+	router = app.Group(groupPath)
 	return app, router
 }
 

@@ -1,0 +1,19 @@
+listen:
+  host: "0.0.0.0"
+  port: 8088
+
+forms:
+  6db3fc2c-9220-4fd1-8e40-c900c060ca9e:
+    enabled: true
+    validation:
+      enabled: false
+    targets:
+      - 
+        enabled: false
+        template: "./templates/default.html"
+        shoutrrrurl: "invalid://invalid"
+
+      -
+        enabled: true
+        template: "./templates/default.html"
+        shoutrrrurl: "telegram://<token>@telegram?channels=<channel>&ParseMode=none"

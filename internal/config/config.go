@@ -31,24 +31,28 @@ type Config struct {
 
 var conf *Config = nil
 
-func Init() {
+func NewConfig(configFilePath string) error {
 	if conf != nil {
-		return
+		log.Printf("Config already set")
+		return nil
 	}
 
-	content, err := ioutil.ReadFile("./config.yml")
+	content, err := ioutil.ReadFile(configFilePath)
 	if err != nil && !os.IsNotExist(err) {
 		log.Fatal(err)
+		return err
 	} else if os.IsNotExist(err) {
-		log.Println("Config empty")
+		log.Printf("Config %s empty", configFilePath)
 	}
 
 	// Convert []byte to string and print to screen
 	err = yaml.Unmarshal(content, &conf)
 	if err != nil {
 		log.Fatalf("error: %v", err)
+		return err
 	}
 	fmt.Printf("--- t:\n%v\n\n", conf)
+	return nil
 }
 
 func GetConfig() *Config {
