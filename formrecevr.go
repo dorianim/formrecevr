@@ -39,6 +39,9 @@ func PreRun(cmd *cobra.Command, _ []string) {
 }
 
 func Run(c *cobra.Command, names []string) {
-	config.NewConfig("./config.yml")
+	if err := config.NewConfig("./config.yml"); err != nil {
+		log.Fatalf("Error reading config.yml: %v", err)
+	}
+
 	server.Start()
 }

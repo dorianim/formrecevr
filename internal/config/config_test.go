@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/dorianim/formrecevr/internal/config"
@@ -8,8 +9,33 @@ import (
 )
 
 func TestNewConfig(t *testing.T) {
-	e := config.NewConfig("./config.yml")
-	assert.Nil(t, e)
+	t.Run("valid config", func(t *testing.T) {
+		e := config.NewConfig("../../testdata/config.yml")
+		assert.Nil(t, e)
+	})
+
+	t.Run("invalid config", func(t *testing.T) {
+		e := config.NewConfig("../../testdata/invalid-config.yml")
+		assert.NotNil(t, e)
+	})
+
+	t.Run("non existent config", func(t *testing.T) {
+		tmpFile := "../../testdata/non-existent-config.yml"
+		e := os.Remove(tmpFile)
+		assert.True(t, e == nil || os.IsNotExist(e))
+
+		// check if default config works
+		e = config.NewConfig(tmpFile)
+		assert.Nil(t, e)
+		assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+
+		// check if default config has been written correctly
+		e = config.NewConfig(tmpFile)
+		assert.Nil(t, e)
+		assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+
+		assert.Nil(t, os.Remove(tmpFile))
+	})
 }
 
 func TestGetConfig(t *testing.T) {

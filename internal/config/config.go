@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -20,35 +21,31 @@ type FormConfig struct {
 	Targets []*TargetConfig
 }
 
-type Config struct {
-	Listen struct {
-		Host string
-		Port int
-	}
-
-	Forms map[string]*FormConfig
+type ListenConfig struct {
+	Host string
+	Port int
 }
 
-var conf *Config = nil
+type Config struct {
+	Listen ListenConfig
+	Forms  map[string]*FormConfig
+}
+
+var conf *Config = DefaultConfig()
 
 func NewConfig(configFilePath string) error {
-	if conf != nil {
-		log.Printf("Config already set")
-		return nil
-	}
-
+	conf = nil
 	content, err := ioutil.ReadFile(configFilePath)
 	if err != nil && !os.IsNotExist(err) {
-		log.Fatal(err)
 		return err
 	} else if os.IsNotExist(err) {
-		log.Printf("Config %s empty", configFilePath)
+		log.Printf("Config %s empty, writing default to file", configFilePath)
+		conf = DefaultConfig()
+		return writeConfigToFile(configFilePath, conf)
 	}
 
-	// Convert []byte to string and print to screen
 	err = yaml.Unmarshal(content, &conf)
 	if err != nil {
-		log.Fatalf("error: %v", err)
 		return err
 	}
 	fmt.Printf("--- t:\n%v\n\n", conf)
@@ -57,4 +54,51 @@ func NewConfig(configFilePath string) error {
 
 func GetConfig() *Config {
 	return conf
+}
+
+func writeConfigToFile(configFilePath string, conf *Config) error {
+	d, err := yaml.Marshal(&conf)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(filepath.Dir(configFilePath), os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	f, err := os.OpenFile(configFilePath, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	f.Truncate(0)
+	_, err = f.Write(d)
+	if err != nil {
+		return err
+	}
+
+	f.Close()
+	return nil
+}
+
+func DefaultConfig() *Config {
+	return &Config{
+		Listen: ListenConfig{
+			Host: "0.0.0.0",
+			Port: 8088,
+		},
+		Forms: map[string]*FormConfig{
+			"Example": {
+				Enabled: false,
+				Targets: []*TargetConfig{
+					{
+						Enabled:     false,
+						Template:    "./templates/default.html",
+						ShoutrrrURL: "See: https://containrrr.dev/shoutrrr/v0.5/services/overview/",
+					},
+				},
+			},
+		},
+	}
 }
