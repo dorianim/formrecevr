@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/dorianim/formrecevr/internal/config"
 	"github.com/dorianim/formrecevr/internal/server"
+	"github.com/dorianim/formrecevr/internal/template"
+	"github.com/gin-gonic/gin"
 
 	"github.com/spf13/cobra"
 )
@@ -42,6 +46,8 @@ func PreRun(cmd *cobra.Command, _ []string) {
 
 // Run starts the server
 func Run(c *cobra.Command, names []string) {
+	gin.SetMode(gin.ReleaseMode)
+
 	configFilePath := os.Getenv("FORMRECEVR_CONFIG_FILE_PATH")
 	if configFilePath == "" {
 		configFilePath = "/config/config.yml"
@@ -50,6 +56,9 @@ func Run(c *cobra.Command, names []string) {
 	if err := config.NewConfig(configFilePath); err != nil {
 		log.Fatalf("Error reading config.yml: %v", err)
 	}
+
+	templateDir := fmt.Sprintf("%s/templates", filepath.Dir(configFilePath))
+	template.CreateDefaultTemplate(templateDir)
 
 	server.Start()
 }

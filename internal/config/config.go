@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -53,7 +52,7 @@ func NewConfig(configFilePath string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("--- t:\n%v\n\n", conf)
+
 	return nil
 }
 
