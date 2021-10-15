@@ -9,4 +9,4 @@ FROM scratch
 LABEL maintainer="Dorian Zedler <dev@dorian.im>"
 WORKDIR /
 COPY --from=builder /main ./
-ENTRYPOINT [ "./main" ]
+ENTRYPOINT [ "/main" ]
