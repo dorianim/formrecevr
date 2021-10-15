@@ -15,10 +15,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version = "development"
-
-//var log = event.Log
-
 var rootCmd = NewRootCommand()
 
 // NewRootCommand creates the root command for watchtower
