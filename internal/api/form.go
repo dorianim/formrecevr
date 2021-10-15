@@ -47,14 +47,11 @@ func PostForm(router *gin.RouterGroup) {
 			return
 		}
 
-		log.Printf("Form data: %v", c.Request.Form)
-
 		atLeastOneSuccess := false
 		for _, targetConfig := range formConfig.Targets {
 			if !targetConfig.Enabled {
 				continue
 			}
-			log.Printf("Processing target %v", targetConfig)
 
 			targetData, err := template.ExecuteTemplateFromFile(targetConfig.Template, c.Request.Form)
 			if err != nil {
