@@ -62,5 +62,8 @@ func executeTemplate(template *template.Template, data interface{}) (string, err
 func getFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"join": strings.Join,
+		"print": func(stringList []string) string {
+			return strings.Join(stringList, "")
+		},
 	}
 }

@@ -58,13 +58,19 @@ func PostForm(router *gin.RouterGroup) {
 
 			targetData, err := template.ExecuteTemplateFromFile(targetConfig.Template, c.Request.Form)
 			if err != nil {
-				log.Printf("Error processing template %s: %v", targetConfig.Template, err)
+				log.Printf("Error processing body template %s: %v", targetConfig.Template, err)
 				continue
 			}
 
-			err = shoutrrr.Send(targetConfig.ShoutrrrURL, targetData)
+			shoutrrrURL, err := template.ExecuteTemplateFromString(targetConfig.ShoutrrrURL, c.Request.Form)
 			if err != nil {
-				log.Printf("Error sending form to %s: %v", targetConfig.ShoutrrrURL, err)
+				log.Printf("Error processing URL template %s: %v", targetConfig.ShoutrrrURL, err)
+				continue
+			}
+
+			err = shoutrrr.Send(shoutrrrURL, targetData)
+			if err != nil {
+				log.Printf("Error sending form to %s: %v", shoutrrrURL, err)
 				continue
 			}
 

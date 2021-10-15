@@ -34,7 +34,7 @@ func TestPostForm(t *testing.T) {
 					{
 						Enabled:     true,
 						Template:    fmt.Sprintf("%s/default.html", tmpTemplateDir),
-						ShoutrrrURL: "generic://127.0.0.1", // send webhook to the local testserver
+						ShoutrrrURL: "generic://127.0.0.1?disabletls=yes", // send webhook to the local testserver
 					},
 					{
 						Enabled: false,
@@ -95,6 +95,52 @@ func TestPostForm(t *testing.T) {
 		writer.Close()
 
 		r := PerformRequestWithBody(app, "POST", "/f/example", writer.FormDataContentType(), body.String())
+		assert.Equal(t, http.StatusOK, r.Code)
+
+		var response api.ResponseBody
+		json.NewDecoder(r.Body).Decode(&response)
+		assert.Equal(t, "Success", response.Message)
+		os.RemoveAll(tmpTemplateDir)
+	})
+
+	t.Run("successful request urlencoded with shoutrrr template", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			// Test request parameters
+			assert.Equal(t, req.URL.String(), "/")
+			// Send response to be tested
+			rw.WriteHeader(200)
+		}))
+		defer server.Close()
+
+		tmpConfig := &config.Config{
+			Listen: config.ListenConfig{
+				Host: "127.0.0.1",
+				Port: 8088,
+			},
+			Forms: map[string]*config.FormConfig{
+				"example": {
+					Enabled: true,
+					Targets: []*config.TargetConfig{
+						{
+							Enabled:     true,
+							Template:    fmt.Sprintf("%s/default.html", tmpTemplateDir),
+							ShoutrrrURL: "generic://{{ print .c }}?disabletls=yes", // send webhook to templatable hook
+						},
+						{
+							Enabled: false,
+						},
+					},
+				},
+			},
+		}
+
+		config.SetConfig(tmpConfig)
+		template.CreateDefaultTemplate(tmpTemplateDir)
+
+		app, router := NewApiTest("/f")
+		api.PostForm(router)
+		formData := fmt.Sprintf("a=a&b=b&c=%s", strings.Replace(server.URL, "http://", "", -1))
+		r := PerformRequestWithBody(app, "POST", "/f/example", "application/x-www-form-urlencoded", formData)
 		assert.Equal(t, http.StatusOK, r.Code)
 
 		var response api.ResponseBody
@@ -197,7 +243,7 @@ func TestPostForm(t *testing.T) {
 		os.RemoveAll(tmpTemplateDir)
 	})
 
-	t.Run("error in all templates", func(t *testing.T) {
+	t.Run("error in all body templates", func(t *testing.T) {
 		config.SetConfig(&config.Config{
 			Listen: config.ListenConfig{
 				Host: "0.0.0.0",
@@ -225,5 +271,37 @@ func TestPostForm(t *testing.T) {
 		var response api.ResponseBody
 		json.NewDecoder(r.Body).Decode(&response)
 		assert.Equal(t, "Internal server error", response.Message)
+	})
+
+	t.Run("error in all target templates", func(t *testing.T) {
+		config.SetConfig(&config.Config{
+			Listen: config.ListenConfig{
+				Host: "0.0.0.0",
+				Port: 8088,
+			},
+			Forms: map[string]*config.FormConfig{
+				"example": {
+					Enabled: true,
+					Targets: []*config.TargetConfig{
+						{
+							Enabled:     true,
+							Template:    fmt.Sprintf("%s/default.html", tmpTemplateDir),
+							ShoutrrrURL: "generic://{{notvalid}}",
+						},
+					},
+				},
+			},
+		})
+		template.CreateDefaultTemplate(tmpTemplateDir)
+
+		app, router := NewApiTest("/f")
+		api.PostForm(router)
+		r := PerformRequestWithBody(app, "POST", "/f/example", "application/x-www-form-urlencoded", "a=a&b=b")
+		assert.Equal(t, http.StatusInternalServerError, r.Code)
+
+		var response api.ResponseBody
+		json.NewDecoder(r.Body).Decode(&response)
+		assert.Equal(t, "Internal server error", response.Message)
+		os.RemoveAll(tmpTemplateDir)
 	})
 }

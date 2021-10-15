@@ -66,6 +66,12 @@ func TestExecuteTemplateFromString(t *testing.T) {
 		assert.Equal(t, "<test>", res)
 	})
 
+	t.Run("success with print", func(t *testing.T) {
+		res, err := template.ExecuteTemplateFromString("<{{ print .var }}>", map[string][]string{"var": {"test"}})
+		assert.Nil(t, err)
+		assert.Equal(t, "<test>", res)
+	})
+
 	t.Run("error", func(t *testing.T) {
 		res, err := template.ExecuteTemplateFromString("{{notvalid}}", nil)
 		assert.NotNil(t, err)
