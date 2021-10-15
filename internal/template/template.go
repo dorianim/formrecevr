@@ -30,7 +30,7 @@ func CreateDefaultTemplate(path string) error {
 	return nil
 }
 
-// ExecuteTemplate parses a template, fills it and returns the result
+// ExecuteTemplateFromFile parses a template from a file, fills it and returns the result
 func ExecuteTemplateFromFile(templateFilePath string, data interface{}) (string, error) {
 	parsedTemplate, err := template.New(path.Base(templateFilePath)).Funcs(getFuncMap()).ParseFiles(templateFilePath)
 	if err != nil {
@@ -40,6 +40,7 @@ func ExecuteTemplateFromFile(templateFilePath string, data interface{}) (string,
 	return executeTemplate(parsedTemplate, data)
 }
 
+// ExecuteTemplateFromString parses a template from a string, fills it and returns the result
 func ExecuteTemplateFromString(templateString string, data interface{}) (string, error) {
 	parsedTemplate, err := template.New("t1").Funcs(getFuncMap()).Parse(templateString)
 	if err != nil {
