@@ -3,9 +3,11 @@ package api_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -19,7 +21,7 @@ func TestPostForm(t *testing.T) {
 
 	genericConfig := &config.Config{
 		Listen: config.ListenConfig{
-			Host: "0.0.0.0",
+			Host: "127.0.0.1",
 			Port: 8088,
 		},
 		Forms: map[string]*config.FormConfig{
@@ -29,7 +31,7 @@ func TestPostForm(t *testing.T) {
 					{
 						Enabled:     true,
 						Template:    "../../templates/default.html",
-						ShoutrrrURL: "generic://example.com", // send webhook to example.com
+						ShoutrrrURL: "generic://127.0.0.1", // send webhook to the local testserver
 					},
 					{
 						Enabled: false,
@@ -40,6 +42,17 @@ func TestPostForm(t *testing.T) {
 	}
 
 	t.Run("successful request urlencoded", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			// Test request parameters
+			assert.Equal(t, req.URL.String(), "/")
+			// Send response to be tested
+			rw.WriteHeader(200)
+		}))
+		defer server.Close()
+
+		shoutrrrURL := fmt.Sprintf("generic://%s?disabletls=yes", strings.Replace(server.URL, "http://", "", -1))
+		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
+
 		config.SetConfig(genericConfig)
 
 		app, router := NewApiTest("/f")
@@ -53,6 +66,17 @@ func TestPostForm(t *testing.T) {
 	})
 
 	t.Run("successful request multipart", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			// Test request parameters
+			assert.Equal(t, req.URL.String(), "/")
+			// Send response to be tested
+			rw.WriteHeader(200)
+		}))
+		defer server.Close()
+
+		shoutrrrURL := fmt.Sprintf("generic://%s?disabletls=yes", strings.Replace(server.URL, "http://", "", -1))
+		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
+
 		config.SetConfig(genericConfig)
 
 		app, router := NewApiTest("/f")
