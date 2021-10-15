@@ -56,7 +56,7 @@ func PostForm(router *gin.RouterGroup) {
 			}
 			log.Printf("Processing target %v", targetConfig)
 
-			targetData, err := template.ExecuteTemplate(targetConfig.Template, c.Request.Form)
+			targetData, err := template.ExecuteTemplateFromFile(targetConfig.Template, c.Request.Form)
 			if err != nil {
 				log.Printf("Error processing template %s: %v", targetConfig.Template, err)
 				continue

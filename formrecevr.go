@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -60,5 +61,12 @@ func Run(c *cobra.Command, names []string) {
 	templateDir := fmt.Sprintf("%s/templates", filepath.Dir(configFilePath))
 	template.CreateDefaultTemplate(templateDir)
 
-	server.Start()
+	s := server.New()
+	if err := s.ListenAndServe(); err != nil {
+		if err == http.ErrServerClosed {
+			log.Println("http: web server shutdown complete")
+		} else {
+			log.Fatalf("http: web server closed unexpect: %s", err)
+		}
+	}
 }

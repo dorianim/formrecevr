@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -15,10 +16,12 @@ import (
 
 	"github.com/dorianim/formrecevr/internal/api"
 	"github.com/dorianim/formrecevr/internal/config"
+	"github.com/dorianim/formrecevr/internal/template"
 )
 
 func TestPostForm(t *testing.T) {
 
+	tmpTemplateDir := "../../testdata/tmp"
 	genericConfig := &config.Config{
 		Listen: config.ListenConfig{
 			Host: "127.0.0.1",
@@ -30,7 +33,7 @@ func TestPostForm(t *testing.T) {
 				Targets: []*config.TargetConfig{
 					{
 						Enabled:     true,
-						Template:    "../../templates/default.html",
+						Template:    fmt.Sprintf("%s/default.html", tmpTemplateDir),
 						ShoutrrrURL: "generic://127.0.0.1", // send webhook to the local testserver
 					},
 					{
@@ -54,6 +57,7 @@ func TestPostForm(t *testing.T) {
 		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
 
 		config.SetConfig(genericConfig)
+		template.CreateDefaultTemplate(tmpTemplateDir)
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -63,6 +67,7 @@ func TestPostForm(t *testing.T) {
 		var response api.ResponseBody
 		json.NewDecoder(r.Body).Decode(&response)
 		assert.Equal(t, "Success", response.Message)
+		os.RemoveAll(tmpTemplateDir)
 	})
 
 	t.Run("successful request multipart", func(t *testing.T) {
@@ -78,6 +83,7 @@ func TestPostForm(t *testing.T) {
 		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
 
 		config.SetConfig(genericConfig)
+		template.CreateDefaultTemplate(tmpTemplateDir)
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -94,6 +100,7 @@ func TestPostForm(t *testing.T) {
 		var response api.ResponseBody
 		json.NewDecoder(r.Body).Decode(&response)
 		assert.Equal(t, "Success", response.Message)
+		os.RemoveAll(tmpTemplateDir)
 	})
 
 	t.Run("form not found", func(t *testing.T) {
@@ -170,13 +177,14 @@ func TestPostForm(t *testing.T) {
 					Targets: []*config.TargetConfig{
 						{
 							Enabled:     true,
-							Template:    "../../templates/default.html",
+							Template:    fmt.Sprintf("%s/default.html", tmpTemplateDir),
 							ShoutrrrURL: "malformed://target",
 						},
 					},
 				},
 			},
 		})
+		template.CreateDefaultTemplate(tmpTemplateDir)
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -186,6 +194,7 @@ func TestPostForm(t *testing.T) {
 		var response api.ResponseBody
 		json.NewDecoder(r.Body).Decode(&response)
 		assert.Equal(t, "Internal server error", response.Message)
+		os.RemoveAll(tmpTemplateDir)
 	})
 
 	t.Run("error in all templates", func(t *testing.T) {

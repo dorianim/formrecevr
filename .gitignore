@@ -1,3 +1,4 @@
 /formrecevr
-/config.yml
 /coverage.txt
+/docker-config
+/testdata/tmp

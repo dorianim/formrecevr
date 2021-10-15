@@ -3,11 +3,10 @@ package template
 import (
 	"bytes"
 	"fmt"
-	"html/template"
-	"log"
 	"os"
 	"path"
 	"strings"
+	"text/template"
 )
 
 // CreateDefaultTemplate creates the default template
@@ -20,14 +19,9 @@ func CreateDefaultTemplate(path string) error {
 	if err == nil || !os.IsNotExist(err) {
 		return err
 	}
-	log.Println(err)
-
 	os.MkdirAll(path, os.ModePerm)
 
-	f, err := os.OpenFile(defaultTemplatePath, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
+	f, _ := os.OpenFile(defaultTemplatePath, os.O_CREATE|os.O_WRONLY, 0644)
 
 	f.Truncate(0)
 	f.Write([]byte(defaultTemplate))
@@ -37,18 +31,36 @@ func CreateDefaultTemplate(path string) error {
 }
 
 // ExecuteTemplate parses a template, fills it and returns the result
-func ExecuteTemplate(templateFilePath string, data interface{}) (string, error) {
-	parsedTemplate, err := template.New(path.Base(templateFilePath)).Funcs(template.FuncMap{
-		"join": strings.Join,
-	}).ParseFiles(templateFilePath)
+func ExecuteTemplateFromFile(templateFilePath string, data interface{}) (string, error) {
+	parsedTemplate, err := template.New(path.Base(templateFilePath)).Funcs(getFuncMap()).ParseFiles(templateFilePath)
 	if err != nil {
 		return "", err
 	}
+
+	return executeTemplate(parsedTemplate, data)
+}
+
+func ExecuteTemplateFromString(templateString string, data interface{}) (string, error) {
+	parsedTemplate, err := template.New("t1").Funcs(getFuncMap()).Parse(templateString)
+	if err != nil {
+		return "", err
+	}
+
+	return executeTemplate(parsedTemplate, data)
+}
+
+func executeTemplate(template *template.Template, data interface{}) (string, error) {
 	buf := new(bytes.Buffer)
-	err = parsedTemplate.Execute(buf, data)
+	err := template.Execute(buf, data)
 	if err != nil {
 		return "", err
 	}
 
 	return buf.String(), nil
+}
+
+func getFuncMap() template.FuncMap {
+	return template.FuncMap{
+		"join": strings.Join,
+	}
 }

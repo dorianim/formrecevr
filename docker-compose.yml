@@ -8,7 +8,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - "./:/config"
+      - "./docker-config:/config"
     ports:
       - 8088:8088
     environment:
