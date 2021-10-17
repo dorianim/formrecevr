@@ -27,8 +27,9 @@ func TestPostForm(t *testing.T) {
 			Host: "127.0.0.1",
 			Port: 8088,
 		},
-		Forms: map[string]*config.FormConfig{
-			"example": {
+		Forms: []*config.FormConfig{
+			{
+				Id:      "example",
 				Enabled: true,
 				Targets: []*config.TargetConfig{
 					{
@@ -54,7 +55,7 @@ func TestPostForm(t *testing.T) {
 		defer server.Close()
 
 		shoutrrrURL := fmt.Sprintf("generic://%s?disabletls=yes", strings.Replace(server.URL, "http://", "", -1))
-		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
+		genericConfig.Forms[0].Targets[0].ShoutrrrURL = shoutrrrURL
 
 		config.SetConfig(genericConfig)
 		template.Setup(tmpTemplateDir)
@@ -81,7 +82,7 @@ func TestPostForm(t *testing.T) {
 		defer server.Close()
 
 		shoutrrrURL := fmt.Sprintf("generic://%s?disabletls=yes", strings.Replace(server.URL, "http://", "", -1))
-		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
+		genericConfig.Forms[0].Targets[0].ShoutrrrURL = shoutrrrURL
 
 		config.SetConfig(genericConfig)
 		template.Setup(tmpTemplateDir)
@@ -119,8 +120,9 @@ func TestPostForm(t *testing.T) {
 				Host: "127.0.0.1",
 				Port: 8088,
 			},
-			Forms: map[string]*config.FormConfig{
-				"example": {
+			Forms: []*config.FormConfig{
+				{
+					Id:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{
@@ -197,8 +199,9 @@ func TestPostForm(t *testing.T) {
 				Host: "0.0.0.0",
 				Port: 8088,
 			},
-			Forms: map[string]*config.FormConfig{
-				"example": {
+			Forms: []*config.FormConfig{
+				{
+					Id:      "example",
 					Enabled: false,
 				},
 			},
@@ -220,8 +223,9 @@ func TestPostForm(t *testing.T) {
 				Host: "0.0.0.0",
 				Port: 8088,
 			},
-			Forms: map[string]*config.FormConfig{
-				"example": {
+			Forms: []*config.FormConfig{
+				{
+					Id:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{
@@ -253,8 +257,9 @@ func TestPostForm(t *testing.T) {
 				Host: "0.0.0.0",
 				Port: 8088,
 			},
-			Forms: map[string]*config.FormConfig{
-				"example": {
+			Forms: []*config.FormConfig{
+				{
+					Id:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{
@@ -283,8 +288,9 @@ func TestPostForm(t *testing.T) {
 				Host: "0.0.0.0",
 				Port: 8088,
 			},
-			Forms: map[string]*config.FormConfig{
-				"example": {
+			Forms: []*config.FormConfig{
+				{
+					Id:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{

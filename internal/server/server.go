@@ -1,28 +1,48 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 
 	"github.com/dorianim/formrecevr/internal/config"
+	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 )
 
+var httpServer *http.Server
+var httpRouter *gin.Engine
+
 // New starts the server
-func New() *http.Server {
-	config := config.GetConfig()
-	router := gin.New()
+func Setup() {
+	httpRouter = gin.New()
 
-	router.Use(gin.Logger())
-	registerRoutes(router)
+	httpRouter.Use(gin.Logger())
+	registerRoutes(httpRouter)
 
-	server := &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", config.Listen.Host, config.Listen.Port),
-		Handler: router,
+	config.OnConfigChange(handleConfigChanged)
+}
+
+func ListenAndServe() error {
+	var err error = nil
+	for err == nil || err == http.ErrServerClosed {
+		c := config.GetConfig()
+		httpServer = &http.Server{
+			Handler: httpRouter,
+			Addr:    fmt.Sprintf("%s:%d", c.Listen.Host, c.Listen.Port),
+		}
+
+		log.Printf("Starting web server at %s", httpServer.Addr)
+		err = httpServer.ListenAndServe()
 	}
+	return err
+}
 
-	log.Printf("http: starting web server at %s", server.Addr)
-
-	return server
+func handleConfigChanged(event fsnotify.Event, config *config.Config, oldConfig *config.Config) {
+	if !reflect.DeepEqual(oldConfig.Listen, config.Listen) {
+		log.Println("Listen config changed, restarting web server ...")
+		httpServer.Shutdown(context.Background())
+	}
 }

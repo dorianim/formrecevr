@@ -1,12 +1,11 @@
 package config
 
 import (
-	"io/ioutil"
+	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 
-	"gopkg.in/yaml.v2"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
 // TargetConfig is the config of a shoutrrr target
@@ -19,6 +18,7 @@ type TargetConfig struct {
 // FormConfig is the config of a form
 type FormConfig struct {
 	Enabled bool
+	Id      string
 	Targets []*TargetConfig
 }
 
@@ -31,51 +31,56 @@ type ListenConfig struct {
 // Config is the type which contains all above sub-configs
 type Config struct {
 	Listen ListenConfig
-	Forms  map[string]*FormConfig
+	Forms  []*FormConfig
 }
 
+type OnConfigChangeFunc func(event fsnotify.Event, config *Config, oldConfig *Config)
+
 var conf *Config = DefaultConfig()
+var onConfigChangeFuncs []OnConfigChangeFunc
 
-// NewConfig reads a configfile, parses it and puts it into conf
-func NewConfig(configFilePath string) error {
-	conf = nil
-	content, err := ioutil.ReadFile(configFilePath)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	} else if os.IsNotExist(err) {
-		log.Printf("Config %s empty, writing default to file", configFilePath)
-		conf = DefaultConfig()
-		return WriteConfigToFile(configFilePath, conf)
+// Setup reads the config file and parses it
+func Setup(configPath string) error {
+	return SetupWithName(configPath, "config")
+}
+
+// Setup reads the config file and parses it and allows to set the name
+func SetupWithName(configPath string, configName string) error {
+
+	viper.SetEnvPrefix("FORMRECEVR_")
+	viper.SetConfigType("yml")
+	viper.SetConfigName(configName)
+	viper.SetConfigPermissions(0600)
+	viper.AddConfigPath(configPath)
+	viper.AddConfigPath("./formrecevr-config")
+
+	viper.SetDefault("listen", DefaultConfig().Listen)
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
+
+		viper.SetConfigFile(fmt.Sprintf("%s/%s", configPath, fmt.Sprintf("%s.yml", configName)))
+		viper.SetDefault("forms", DefaultConfig().Forms)
+		if err = viper.WriteConfig(); err != nil {
+			return err
+		}
 	}
 
-	err = yaml.Unmarshal(content, &conf)
-	if err != nil {
-		return err
-	}
+	viper.OnConfigChange(handleConfigChanged)
+	viper.WatchConfig()
 
-	return nil
+	return viper.Unmarshal(&conf)
+}
+
+func OnConfigChange(callback OnConfigChangeFunc) {
+	onConfigChangeFuncs = append(onConfigChangeFuncs, callback)
 }
 
 // GetConfig returns the config
 func GetConfig() *Config {
 	return conf
-}
-
-// WriteConfigToFile writes a config to a file
-func WriteConfigToFile(configFilePath string, conf *Config) error {
-	d, _ := yaml.Marshal(&conf)
-	os.MkdirAll(filepath.Dir(configFilePath), os.ModePerm)
-
-	f, err := os.OpenFile(configFilePath, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-
-	f.Truncate(0)
-	f.Write(d)
-
-	f.Close()
-	return nil
 }
 
 // DefaultConfig returns the default config
@@ -85,9 +90,10 @@ func DefaultConfig() *Config {
 			Host: "0.0.0.0",
 			Port: 8088,
 		},
-		Forms: map[string]*FormConfig{
-			"Example": {
+		Forms: []*FormConfig{
+			{
 				Enabled: false,
+				Id:      "Example",
 				Targets: []*TargetConfig{
 					{
 						Enabled:     false,
@@ -103,4 +109,13 @@ func DefaultConfig() *Config {
 // SetConfig sets the config to c
 func SetConfig(c *Config) {
 	conf = c
+}
+
+func handleConfigChanged(e fsnotify.Event) {
+	log.Println("Config file changed")
+	oldConfig := *conf
+	viper.Unmarshal(&conf)
+	for _, callbackFunc := range onConfigChangeFuncs {
+		callbackFunc(e, conf, &oldConfig)
+	}
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/dorianim/formrecevr/internal/config"
@@ -49,9 +48,8 @@ func Run(c *cobra.Command, names []string) {
 		configPath = "/config"
 	}
 
-	configFilePath := fmt.Sprintf("%s/config.yml", configPath)
-	if err := config.NewConfig(configFilePath); err != nil {
-		log.Fatalf("Error reading config.yml: %v", err)
+	if err := config.Setup(configPath); err != nil {
+		log.Fatalf("Error in config setup: %v", err)
 	}
 
 	templatePath := fmt.Sprintf("%s/templates", configPath)
@@ -60,12 +58,7 @@ func Run(c *cobra.Command, names []string) {
 		log.Fatalf("Error creating default template: %v", err)
 	}
 
-	s := server.New()
-	if err := s.ListenAndServe(); err != nil {
-		if err == http.ErrServerClosed {
-			log.Println("http: web server shutdown complete")
-		} else {
-			log.Fatalf("http: web server closed unexpect: %s", err)
-		}
-	}
+	server.Setup()
+	err := server.ListenAndServe()
+	log.Fatalf("http: web server closed unexpect: %s", err)
 }

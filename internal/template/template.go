@@ -18,12 +18,16 @@ func Setup(path string) {
 
 // CreateDefaultTemplate creates the default template
 func CreateDefaultTemplate() error {
+	return createDefaultTemplate(os.Stat)
+}
+
+func createDefaultTemplate(statFunc func(name string) (os.FileInfo, error)) error {
 	defaultTemplate := `New form submited using Formrecevr:
 {{ range $key, $val := . }}- {{ $key }}: {{ print $val }}
 {{ end }}`
 	defaultTemplatePath := fmt.Sprintf("%s/default.html", templatePath)
 
-	_, err := os.Stat(defaultTemplatePath)
+	_, err := statFunc(defaultTemplatePath)
 	if err == nil || !os.IsNotExist(err) {
 		return err
 	}

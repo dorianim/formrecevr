@@ -1,22 +1,23 @@
-package config_test
+package config
 
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
-	"github.com/dorianim/formrecevr/internal/config"
+	"github.com/fsnotify/fsnotify"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewConfig(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
-		e := config.NewConfig("../../testdata/config.yml")
+		e := Setup("../../testdata")
 		assert.Nil(t, e)
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
-		e := config.NewConfig("../../testdata/invalid-config.yml")
+		e := SetupWithName("../../testdata", "invalid-config")
 		assert.NotNil(t, e)
 	})
 
@@ -26,50 +27,47 @@ func TestNewConfig(t *testing.T) {
 		err = os.Chmod(tmpfile.Name(), 0000)
 		assert.Nil(t, err)
 
-		e := config.NewConfig(tmpfile.Name())
+		e := SetupWithName(filepath.Base(tmpfile.Name()), "unreadable-config")
 		assert.NotNil(t, e)
 	})
 
 	t.Run("non existent config", func(t *testing.T) {
-		tmpFile := "../../testdata/non-existent-config.yml"
-		e := os.Remove(tmpFile)
+		tmpPath := "../../testdata/non-existent"
+		e := os.RemoveAll(tmpPath)
 		assert.True(t, e == nil || os.IsNotExist(e))
 
 		// check if default config works
-		e = config.NewConfig(tmpFile)
+		e = Setup(tmpPath)
 		assert.Nil(t, e)
-		assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+		assert.Equal(t, DefaultConfig(), GetConfig())
 
 		// check if default config has been written correctly
-		e = config.NewConfig(tmpFile)
+		e = Setup(tmpPath)
 		assert.Nil(t, e)
-		assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+		assert.Equal(t, DefaultConfig(), GetConfig())
 
-		assert.Nil(t, os.Remove(tmpFile))
+		assert.Nil(t, os.RemoveAll(tmpPath))
 	})
 }
 
 func TestGetConfig(t *testing.T) {
-	e := config.NewConfig("../../testdata/config.yml")
+	e := Setup("../../testdata/config.yml")
 	assert.Nil(t, e)
 
-	assert.Equal(t, config.DefaultConfig(), config.GetConfig())
-}
-
-func TestWriteConfigToFile(t *testing.T) {
-	t.Run("wrong file permissions", func(t *testing.T) {
-		tmpfile, err := ioutil.TempFile("", "unreadable-config.yml")
-		assert.Nil(t, err)
-		err = os.Chmod(tmpfile.Name(), 0000)
-		assert.Nil(t, err)
-
-		err = config.WriteConfigToFile(tmpfile.Name(), nil)
-		assert.NotNil(t, err)
-	})
+	assert.Equal(t, DefaultConfig(), GetConfig())
 }
 
 func TestSetConfig(t *testing.T) {
-	config.SetConfig(nil)
-	config.SetConfig(config.DefaultConfig())
-	assert.Equal(t, config.DefaultConfig(), config.GetConfig())
+	SetConfig(nil)
+	SetConfig(DefaultConfig())
+	assert.Equal(t, DefaultConfig(), GetConfig())
+}
+
+func TestHandleConfigChange(t *testing.T) {
+	ok := false
+	OnConfigChange(func(event fsnotify.Event, config *Config, oldConfig *Config) {
+		ok = true
+	})
+	handleConfigChanged(fsnotify.Event{})
+	assert.True(t, ok)
 }

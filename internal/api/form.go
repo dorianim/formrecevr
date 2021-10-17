@@ -83,12 +83,10 @@ func PostForm(router *gin.RouterGroup) {
 
 func getForm(formID string) *config.FormConfig {
 	config := config.GetConfig()
-	val, ex := config.Forms[formID]
-	if !ex {
-		return nil
+	for _, form := range config.Forms {
+		if form.Id == formID && form.Enabled {
+			return form
+		}
 	}
-	if !val.Enabled {
-		return nil
-	}
-	return val
+	return nil
 }
