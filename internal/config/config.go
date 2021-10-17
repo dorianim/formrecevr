@@ -86,7 +86,7 @@ func GetConfig() *Config {
 }
 
 func ConfigPathUsed() string {
-	return path.Base(viper.ConfigFileUsed())
+	return path.Dir(viper.ConfigFileUsed())
 }
 
 // DefaultConfig returns the default config
