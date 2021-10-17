@@ -19,7 +19,8 @@ func Setup(path string) {
 // CreateDefaultTemplate creates the default template
 func CreateDefaultTemplate() error {
 	defaultTemplate := `New form submited using Formrecevr:
-{{ range $key, $val := . }}{{ $key }}: {{ join $val "" }}{{ end }}`
+{{ range $key, $val := . }}- {{ $key }}: {{ print $val }}
+{{ end }}`
 	defaultTemplatePath := fmt.Sprintf("%s/default.html", templatePath)
 
 	_, err := os.Stat(defaultTemplatePath)
