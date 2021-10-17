@@ -52,7 +52,7 @@ func Run(c *cobra.Command, names []string) {
 		log.Fatalf("Error in config setup: %v", err)
 	}
 
-	templatePath := fmt.Sprintf("%s/templates", configPath)
+	templatePath := fmt.Sprintf("%s/templates", config.ConfigPathUsed())
 	template.Setup(templatePath)
 	if err := template.CreateDefaultTemplate(); err != nil {
 		log.Fatalf("Error creating default template: %v", err)

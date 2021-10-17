@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"path"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -13,6 +14,7 @@ type TargetConfig struct {
 	Enabled     bool
 	Template    string
 	ShoutrrrURL string
+	Params      map[string]interface{}
 }
 
 // FormConfig is the config of a form
@@ -81,6 +83,10 @@ func OnConfigChange(callback OnConfigChangeFunc) {
 // GetConfig returns the config
 func GetConfig() *Config {
 	return conf
+}
+
+func ConfigPathUsed() string {
+	return path.Base(viper.ConfigFileUsed())
 }
 
 // DefaultConfig returns the default config
