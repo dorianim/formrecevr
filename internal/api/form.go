@@ -31,10 +31,8 @@ func PostForm(router *gin.RouterGroup) {
 		switch c.ContentType() {
 		case "application/x-www-form-urlencoded":
 			err = c.Request.ParseForm()
-			break
 		case "multipart/form-data":
 			err = c.Request.ParseMultipartForm(6400000)
-			break
 		default:
 			log.Printf("Unsupported Content-Type: %s", c.ContentType())
 			c.JSON(http.StatusBadRequest, ResponseBody{Message: "Unsupported Content-Type"})

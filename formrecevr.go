@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/dorianim/formrecevr/internal/config"
 	"github.com/dorianim/formrecevr/internal/server"
@@ -45,17 +44,21 @@ func PreRun(cmd *cobra.Command, _ []string) {
 func Run(c *cobra.Command, names []string) {
 	gin.SetMode(gin.ReleaseMode)
 
-	configFilePath := os.Getenv("FORMRECEVR_CONFIG_FILE_PATH")
-	if configFilePath == "" {
-		configFilePath = "/config/config.yml"
+	configPath, isSet := os.LookupEnv("FORMRECEVR_CONFIG_PATH")
+	if !isSet {
+		configPath = "/config"
 	}
 
+	configFilePath := fmt.Sprintf("%s/config.yml", configPath)
 	if err := config.NewConfig(configFilePath); err != nil {
 		log.Fatalf("Error reading config.yml: %v", err)
 	}
 
-	templateDir := fmt.Sprintf("%s/templates", filepath.Dir(configFilePath))
-	template.CreateDefaultTemplate(templateDir)
+	templatePath := fmt.Sprintf("%s/templates", configPath)
+	template.Setup(templatePath)
+	if err := template.CreateDefaultTemplate(); err != nil {
+		log.Fatalf("Error creating default template: %v", err)
+	}
 
 	s := server.New()
 	if err := s.ListenAndServe(); err != nil {

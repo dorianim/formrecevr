@@ -57,7 +57,8 @@ func TestPostForm(t *testing.T) {
 		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
 
 		config.SetConfig(genericConfig)
-		template.CreateDefaultTemplate(tmpTemplateDir)
+		template.Setup(tmpTemplateDir)
+		template.CreateDefaultTemplate()
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -83,7 +84,8 @@ func TestPostForm(t *testing.T) {
 		genericConfig.Forms["example"].Targets[0].ShoutrrrURL = shoutrrrURL
 
 		config.SetConfig(genericConfig)
-		template.CreateDefaultTemplate(tmpTemplateDir)
+		template.Setup(tmpTemplateDir)
+		template.CreateDefaultTemplate()
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -135,7 +137,8 @@ func TestPostForm(t *testing.T) {
 		}
 
 		config.SetConfig(tmpConfig)
-		template.CreateDefaultTemplate(tmpTemplateDir)
+		template.Setup(tmpTemplateDir)
+		template.CreateDefaultTemplate()
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -230,7 +233,8 @@ func TestPostForm(t *testing.T) {
 				},
 			},
 		})
-		template.CreateDefaultTemplate(tmpTemplateDir)
+		template.Setup(tmpTemplateDir)
+		template.CreateDefaultTemplate()
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
@@ -292,7 +296,8 @@ func TestPostForm(t *testing.T) {
 				},
 			},
 		})
-		template.CreateDefaultTemplate(tmpTemplateDir)
+		template.Setup(tmpTemplateDir)
+		template.CreateDefaultTemplate()
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)

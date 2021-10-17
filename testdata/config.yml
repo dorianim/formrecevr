@@ -6,5 +6,5 @@ forms:
     enabled: false
     targets:
     - enabled: false
-      template: ./templates/default.html
+      template: default.html
       shoutrrrurl: 'See: https://containrrr.dev/shoutrrr/v0.5/services/overview/'

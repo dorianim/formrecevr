@@ -12,17 +12,20 @@ func TestCreateNewTemplate(t *testing.T) {
 	tmpDir := "../../testdata/tmp"
 	t.Run("success", func(t *testing.T) {
 		os.RemoveAll(tmpDir)
-		err := template.CreateDefaultTemplate(tmpDir)
+		template.Setup(tmpDir)
+		err := template.CreateDefaultTemplate()
 		assert.Nil(t, err)
 		os.RemoveAll(tmpDir)
 	})
 
 	t.Run("already existing", func(t *testing.T) {
 		os.RemoveAll(tmpDir)
-		err := template.CreateDefaultTemplate(tmpDir)
+		template.Setup(tmpDir)
+		err := template.CreateDefaultTemplate()
 		assert.Nil(t, err)
 
-		err = template.CreateDefaultTemplate(tmpDir)
+		template.Setup(tmpDir)
+		err = template.CreateDefaultTemplate()
 		assert.Nil(t, err)
 		os.RemoveAll(tmpDir)
 	})
@@ -33,7 +36,8 @@ func TestCreateNewTemplate(t *testing.T) {
 		err := os.Mkdir(tmpDir, 0444)
 		assert.Nil(t, err)
 
-		err = template.CreateDefaultTemplate(tmpDir)
+		template.Setup(tmpDir)
+		err = template.CreateDefaultTemplate()
 		assert.NotNil(t, err)
 		os.RemoveAll(tmpDir)
 	})
@@ -41,13 +45,14 @@ func TestCreateNewTemplate(t *testing.T) {
 
 func TestExecuteTemplateFromFile(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		res, err := template.ExecuteTemplateFromFile("../../testdata/template.html", map[string]string{"var": "test"})
+		template.Setup("../../testdata")
+		res, err := template.ExecuteTemplateFromFile("template.html", map[string]string{"var": "test"})
 		assert.Nil(t, err)
 		assert.Equal(t, "<test>", res)
 	})
 
 	t.Run("error", func(t *testing.T) {
-		res, err := template.ExecuteTemplateFromFile("../../testdata/invalid-template.html", nil)
+		res, err := template.ExecuteTemplateFromFile("invalid-template.html", nil)
 		assert.NotNil(t, err)
 		assert.Equal(t, "", res)
 	})

@@ -91,7 +91,7 @@ func DefaultConfig() *Config {
 				Targets: []*TargetConfig{
 					{
 						Enabled:     false,
-						Template:    "./templates/default.html",
+						Template:    "default.html",
 						ShoutrrrURL: "See: https://containrrr.dev/shoutrrr/v0.5/services/overview/",
 					},
 				},
