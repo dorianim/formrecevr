@@ -1,0 +1,48 @@
+<form method=post id=contact-form>
+    <h1><div id=status-div></div></h1>
+    <label>
+        <span>Your email address</span><br />
+        <input name=email type=email required />
+    </label>
+    <br />
+    <label>
+        <span>Message</span><br />
+        <textarea name=message required rows=4></textarea>
+    </label>
+    <br />
+    <button id=submit-button type=submit>
+        Absenden
+    </button>
+</form>
+<script>
+    var formURL = "http://localhost:5081/f/Example"
+        form = document.getElementById("contact-form"),
+        statusDiv = document.getElementById("status-div"),
+        submitButton = document.getElementById("submit-button");
+
+    function success(response) {
+        statusDiv.innerHTML = "Form submitted successfully."
+        form.reset()
+    }
+
+    function error(response) {
+        statusDiv.innerHTML = "Error while submitting the form!"
+    }
+
+    async function handleSubmit(a) {
+        a.preventDefault();
+        statusDiv.innerHTML = "Please wait ..."
+        var b = new FormData(form);
+        fetch(formURL, {
+            method: form.method,
+            body: b,
+            headers: { Accept: "application/json" }
+        }).then(r => {
+            r.ok ? success(r) : error(r)
+        }).catch(a => {
+            error(r)
+        })
+    }
+
+    form.addEventListener("submit", handleSubmit)
+</script>

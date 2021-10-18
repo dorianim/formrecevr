@@ -10,6 +10,6 @@ services:
     volumes:
       - "./docker-config:/config"
     ports:
-      - 8088:8088
+      - 5081:8088
     environment:
       FORMRECEVR_CONFIG_FILE_PATH: "/config/config.yml"

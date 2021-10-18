@@ -23,10 +23,10 @@
 Formrecevr (pronunced "Form receiver") is a simple and lightweight from receiver backend primarily designed for (but not limited to) static websites. It is inspired by [formspree.io](formspree.io) but it is simpler, self-hosted and doesn't have a frontend.
 
 # Features
-- Easy setup: Just create your docker-compose.yml and you're good to go!
-- Powerful templating: Use Go templating (just like in Hugo) to compose customized content
-- Shoutrrr integration: You can use a [wide variety of services](https://containrrr.dev/shoutrrr/v0.5/services/overview/) to reveive your form submissions
-- Flexible delivery: Thanks to the use of shoutrrr and templating, you can use data from the form as a receiver
+- **Easy setup:** Just create your docker-compose.yml and you're good to go!
+- **Powerful templating:** Use Go templating (just like in Hugo) to compose customized content
+- **Shoutrrr integration:** You can use a [wide variety of services](https://containrrr.dev/shoutrrr/v0.5/services/overview/) to reveive your form submissions
+- **Flexible delivery:** Thanks to the use of shoutrrr and templating, you can use data from the form as a receiver
 
 # Setup
 The official installation method is using Docker:
@@ -42,11 +42,11 @@ The official installation method is using Docker:
         image: dorianim/formrecevr
         restart: always
         ports:
-          - "80:80"
+          - 5081:8088
         volumes:
           - ./config:/config
     ```
-3. Adjust the port (default `80`) to your needs
+3. Adjust the port (default `5081`) to your needs
 4. Start the formrecevr:
     ```bash
     docker-compose up -d
@@ -57,7 +57,7 @@ The official installation method is using Docker:
 8. [OPTIONAL] To setup ssl/https, please use a reverse proxy like nginx
 
 # Configuration
-The configuration is stored in `/config/config.yml` in the container by default. 
+The configuration is stored in `/config/config.yml` in the container by default. It is reloaded live, so changes do not require a container restart to become effective.  
 A fully populated config could look like this:
 ```yaml
 forms:
@@ -92,7 +92,7 @@ listen:
 Templates have to be stored in `/config/templates` by default. 
 The templates are processed by the go templating engine and have access to all of its functionality, like range loops and if conditions.
 
-### Variabled
+### Variables
 Templates can use all submited form fields in the root context. In addition to that, they have access to the params define for their target below the `.params` key.  
 For testing, you can use `{{ . }}` to see all avaiable data.
 
@@ -100,3 +100,11 @@ For testing, you can use `{{ . }}` to see all avaiable data.
 There are two additional functions wich can be used:
 - `join`: Joins a list of string, eg. `{{ join .someListParameter "," }}`
 - `print`: Prints one or more strings or string lists, eg. `{{ print .someString .someStringList }}`
+
+# Routes / API
+There are currently two routes available
+- `/api/v1/healthcheck` (GET): Should return 200 if everything is OK
+- `/f/:formID` (POST): Accepts form data for configured formIDs. It currently supports `application/x-www-form-urlencoded` and `multipart/form-data`
+
+# Implementation
+I recommend to use the javascript [`fetch()` API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) to submit your form. An example of this can be found in [`examples/form-xhr-fetch.html`](https://github.com/dorianim/formrecevr/blob/main/examples/form-xhr-fetch.html)
