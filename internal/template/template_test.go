@@ -85,3 +85,9 @@ func TestExecuteTemplateFromString(t *testing.T) {
 		assert.Equal(t, "", res)
 	})
 }
+
+func TestPrint(t *testing.T) {
+	assert.Equal(t, "test", print("test"))
+	assert.Equal(t, "testtest", print([]string{"test", "test"}))
+	assert.Equal(t, "", print(nil))
+}

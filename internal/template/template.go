@@ -23,7 +23,7 @@ func CreateDefaultTemplate() error {
 
 func createDefaultTemplate(statFunc func(name string) (os.FileInfo, error)) error {
 	defaultTemplate := `New form submited using Formrecevr:
-{{ range $key, $val := . }}- {{ $key }}: {{ print $val }}
+{{ range $key, $val := . }}- {{ $key }}: {{ $val }}
 {{ end }}`
 	defaultTemplatePath := fmt.Sprintf("%s/default.html", templatePath)
 
@@ -75,9 +75,22 @@ func executeTemplate(template *template.Template, data interface{}) (string, err
 
 func getFuncMap() template.FuncMap {
 	return template.FuncMap{
-		"join": strings.Join,
-		"print": func(stringList []string) string {
-			return strings.Join(stringList, "")
-		},
+		"join":  strings.Join,
+		"print": print,
 	}
+}
+
+func print(items ...interface{}) string {
+	result := ""
+	for _, item := range items {
+		switch v := item.(type) {
+		case string:
+			result = fmt.Sprintf("%s%s", result, v)
+		case []string:
+			result = fmt.Sprintf("%s%s", result, strings.Join(v, ""))
+		default:
+			continue
+		}
+	}
+	return result
 }

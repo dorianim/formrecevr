@@ -63,7 +63,7 @@ func TestPostForm(t *testing.T) {
 
 		app, router := NewApiTest("/f")
 		api.PostForm(router)
-		r := PerformRequestWithBody(app, "POST", "/f/example", "application/x-www-form-urlencoded", "a=a&b=b")
+		r := PerformRequestWithBody(app, "POST", "/f/example", "application/x-www-form-urlencoded", "a=a&b[]=b&b[]=c")
 		assert.Equal(t, http.StatusOK, r.Code)
 
 		var response api.ResponseBody

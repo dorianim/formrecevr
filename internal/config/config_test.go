@@ -1,7 +1,8 @@
 package config
 
 import (
-	"io/ioutil"
+	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -18,16 +19,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("invalid config", func(t *testing.T) {
 		e := SetupWithName("../../testdata", "invalid-config")
-		assert.NotNil(t, e)
-	})
-
-	t.Run("unreadable config", func(t *testing.T) {
-		tmpfile, err := ioutil.TempFile("", "unreadable-config.yml")
-		assert.Nil(t, err)
-		err = os.Chmod(tmpfile.Name(), 0000)
-		assert.Nil(t, err)
-
-		e := SetupWithName(filepath.Base(tmpfile.Name()), "unreadable-config")
+		log.Println(e)
 		assert.NotNil(t, e)
 	})
 
@@ -38,20 +30,30 @@ func TestNewConfig(t *testing.T) {
 
 		// check if default config works
 		e = Setup(tmpPath)
+		log.Println(e)
 		assert.Nil(t, e)
 		assert.Equal(t, DefaultConfig(), GetConfig())
 
-		// check if default config has been written correctly
-		e = Setup(tmpPath)
-		assert.Nil(t, e)
-		assert.Equal(t, DefaultConfig(), GetConfig())
+		// check if config was created
+		_, err := os.Stat(fmt.Sprintf("%s/config.yml", tmpPath))
+		assert.False(t, os.IsNotExist(err))
 
 		assert.Nil(t, os.RemoveAll(tmpPath))
+	})
+
+	t.Run("invalid path", func(t *testing.T) {
+		tmpPath := "///invalid"
+		e := os.RemoveAll(tmpPath)
+		assert.True(t, e == nil || os.IsNotExist(e))
+
+		e = Setup(tmpPath)
+		assert.NotNil(t, e)
 	})
 }
 
 func TestGetConfig(t *testing.T) {
-	e := Setup("../../testdata/config.yml")
+	e := Setup("../../testdata")
+	log.Println(e)
 	assert.Nil(t, e)
 
 	assert.Equal(t, DefaultConfig(), GetConfig())
@@ -64,10 +66,20 @@ func TestSetConfig(t *testing.T) {
 }
 
 func TestHandleConfigChange(t *testing.T) {
-	ok := false
-	OnConfigChange(func(event fsnotify.Event, config *Config, oldConfig *Config) {
-		ok = true
+	t.Run("parameter changed", func(t *testing.T) {
+		ok := false
+
+		OnConfigChange(func(event fsnotify.Event, config *Config, oldConfig *Config) {
+			ok = true
+		})
+
+		handleConfigChanged(fsnotify.Event{})
+		assert.True(t, ok)
 	})
-	handleConfigChanged(fsnotify.Event{})
-	assert.True(t, ok)
+}
+
+func TestConfigPathUsed(t *testing.T) {
+	Setup("../../testdata")
+	path, _ := filepath.Abs("../../testdata")
+	assert.Equal(t, path, ConfigPathUsed())
 }

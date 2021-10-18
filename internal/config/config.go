@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"os"
 	"path"
 
 	"github.com/fsnotify/fsnotify"
@@ -49,6 +50,7 @@ func Setup(configPath string) error {
 // Setup reads the config file and parses it and allows to set the name
 func SetupWithName(configPath string, configName string) error {
 
+	viper.Reset()
 	viper.SetEnvPrefix("FORMRECEVR_")
 	viper.SetConfigType("yml")
 	viper.SetConfigName(configName)
@@ -59,10 +61,12 @@ func SetupWithName(configPath string, configName string) error {
 	viper.SetDefault("listen", DefaultConfig().Listen)
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+
+		if _, e := err.(viper.ConfigFileNotFoundError); !e {
 			return err
 		}
 
+		os.MkdirAll(configPath, os.ModePerm)
 		viper.SetConfigFile(fmt.Sprintf("%s/%s", configPath, fmt.Sprintf("%s.yml", configName)))
 		viper.SetDefault("forms", DefaultConfig().Forms)
 		if err = viper.WriteConfig(); err != nil {
@@ -114,12 +118,20 @@ func DefaultConfig() *Config {
 
 // SetConfig sets the config to c
 func SetConfig(c *Config) {
-	conf = c
+	if c == nil {
+		conf = nil
+		viper.Reset()
+	} else {
+		viper.Set("forms", c.Forms)
+		viper.Set("listen", c.Listen)
+		conf = c
+	}
 }
 
 func handleConfigChanged(e fsnotify.Event) {
 	log.Println("Config file changed")
 	oldConfig := *conf
+	conf = nil
 	viper.Unmarshal(&conf)
 	for _, callbackFunc := range onConfigChangeFuncs {
 		callbackFunc(e, conf, &oldConfig)
