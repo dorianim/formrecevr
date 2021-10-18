@@ -21,7 +21,7 @@ type TargetConfig struct {
 // FormConfig is the config of a form
 type FormConfig struct {
 	Enabled bool
-	Id      string
+	ID      string
 	Targets []*TargetConfig
 }
 
@@ -37,6 +37,7 @@ type Config struct {
 	Forms  []*FormConfig
 }
 
+// OnConfigChangeFunc is the type of a function which can be used as a callback
 type OnConfigChangeFunc func(event fsnotify.Event, config *Config, oldConfig *Config)
 
 var conf *Config = DefaultConfig()
@@ -47,7 +48,7 @@ func Setup(configPath string) error {
 	return SetupWithName(configPath, "config")
 }
 
-// Setup reads the config file and parses it and allows to set the name
+// SetupWithName reads the config file and parses it and allows to set the name
 func SetupWithName(configPath string, configName string) error {
 
 	viper.Reset()
@@ -80,6 +81,7 @@ func SetupWithName(configPath string, configName string) error {
 	return viper.Unmarshal(&conf)
 }
 
+// OnConfigChange can be used to attach a callback function which is called whenever the config changes
 func OnConfigChange(callback OnConfigChangeFunc) {
 	onConfigChangeFuncs = append(onConfigChangeFuncs, callback)
 }
@@ -89,7 +91,8 @@ func GetConfig() *Config {
 	return conf
 }
 
-func ConfigPathUsed() string {
+// PathUsed returns the used config path
+func PathUsed() string {
 	return path.Dir(viper.ConfigFileUsed())
 }
 
@@ -103,7 +106,7 @@ func DefaultConfig() *Config {
 		Forms: []*FormConfig{
 			{
 				Enabled: false,
-				Id:      "Example",
+				ID:      "Example",
 				Targets: []*TargetConfig{
 					{
 						Enabled:     false,

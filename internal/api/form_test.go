@@ -29,7 +29,7 @@ func TestPostForm(t *testing.T) {
 		},
 		Forms: []*config.FormConfig{
 			{
-				Id:      "example",
+				ID:      "example",
 				Enabled: true,
 				Targets: []*config.TargetConfig{
 					{
@@ -122,7 +122,7 @@ func TestPostForm(t *testing.T) {
 			},
 			Forms: []*config.FormConfig{
 				{
-					Id:      "example",
+					ID:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{
@@ -201,7 +201,7 @@ func TestPostForm(t *testing.T) {
 			},
 			Forms: []*config.FormConfig{
 				{
-					Id:      "example",
+					ID:      "example",
 					Enabled: false,
 				},
 			},
@@ -225,7 +225,7 @@ func TestPostForm(t *testing.T) {
 			},
 			Forms: []*config.FormConfig{
 				{
-					Id:      "example",
+					ID:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{
@@ -259,7 +259,7 @@ func TestPostForm(t *testing.T) {
 			},
 			Forms: []*config.FormConfig{
 				{
-					Id:      "example",
+					ID:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{
@@ -290,7 +290,7 @@ func TestPostForm(t *testing.T) {
 			},
 			Forms: []*config.FormConfig{
 				{
-					Id:      "example",
+					ID:      "example",
 					Enabled: true,
 					Targets: []*config.TargetConfig{
 						{

@@ -78,5 +78,5 @@ func TestHandleConfigChange(t *testing.T) {
 func TestConfigPathUsed(t *testing.T) {
 	Setup("../../testdata")
 	path, _ := filepath.Abs("../../testdata")
-	assert.Equal(t, path, ConfigPathUsed())
+	assert.Equal(t, path, PathUsed())
 }

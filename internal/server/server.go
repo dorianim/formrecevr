@@ -15,7 +15,7 @@ import (
 var httpServer *http.Server
 var httpRouter *gin.Engine
 
-// New starts the server
+// Setup sets up dan configures the server
 func Setup() {
 	httpRouter = gin.New()
 
@@ -25,6 +25,7 @@ func Setup() {
 	config.OnConfigChange(handleConfigChanged)
 }
 
+// ListenAndServe starts the server. It is a blocking function.
 func ListenAndServe() error {
 	var err error = nil
 	for err == nil || err == http.ErrServerClosed {
