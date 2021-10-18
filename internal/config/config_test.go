@@ -19,7 +19,6 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("invalid config", func(t *testing.T) {
 		e := SetupWithName("../../testdata", "invalid-config")
-		log.Println(e)
 		assert.NotNil(t, e)
 	})
 
@@ -30,7 +29,6 @@ func TestNewConfig(t *testing.T) {
 
 		// check if default config works
 		e = Setup(tmpPath)
-		log.Println(e)
 		assert.Nil(t, e)
 		assert.Equal(t, DefaultConfig(), GetConfig())
 
@@ -42,11 +40,10 @@ func TestNewConfig(t *testing.T) {
 	})
 
 	t.Run("invalid path", func(t *testing.T) {
-		tmpPath := "///invalid"
-		e := os.RemoveAll(tmpPath)
-		assert.True(t, e == nil || os.IsNotExist(e))
+		nullByte := []byte{0x0}
+		tmpPath := string(nullByte)
 
-		e = Setup(tmpPath)
+		e := Setup(tmpPath)
 		assert.NotNil(t, e)
 	})
 }
