@@ -69,6 +69,16 @@ forms:
       shoutrrrurl: 'telegram://someToken@telegram/?channels={{ .params.someChannel }}'
       params:
         someKey: someChannel
+    - enabled: false
+      template: email.html
+      shoutrrrurl: 'smtp://username:password@host:port/?from=fromAddress&to=recipient1&to={{ .mailFromFrom }}'
+      
+  - id: "Example2"
+    enabled: true
+    targets:
+    - enabled: true
+      template: default.html
+      shoutrrrurl: 'slack://token:token@channel/'
 listen:
   host: 0.0.0.0
   port: 8088
@@ -93,13 +103,13 @@ Templates have to be stored in `/config/templates` by default.
 The templates are processed by the go templating engine and have access to all of its functionality, like range loops and if conditions.
 
 ### Variables
-Templates can use all submited form fields in the root context. In addition to that, they have access to the params define for their target below the `.params` key.  
+Templates can use all submited form fields in the root context. In addition to that, they have access to the params defined for their target inside the `.params` key.  
 For testing, you can use `{{ . }}` to see all avaiable data.
 
 ### Functions
 There are two additional functions wich can be used:
-- `join`: Joins a list of string, eg. `{{ join .someListParameter "," }}`
-- `print`: Prints one or more strings or string lists, eg. `{{ print .someString .someStringList }}`
+- `join`: Joins a list of strings with a delimiter, eg. `{{ join .someListParameter "," }}`
+- `print`: Prints one or more strings or string lists without any delimiter, eg. `{{ print .someString .someStringList }}`
 
 # Routes / API
 There are currently two routes available
