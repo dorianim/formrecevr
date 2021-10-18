@@ -80,7 +80,7 @@ listen:
 #### The form block
 - `id`: The ID of the form. I suggest using something like `uuidgen` to create a random ID
 - `enabled`: If the form is enabled. It will not work when this is set to false
-- `targets`: Contains a list of [target blocks]
+- `targets`: Contains a list of [target blocks](#the-target-block)
 
 #### The target block
 - `enabled`: If the target is enabled. It will be skipped when set to false
