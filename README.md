@@ -95,7 +95,7 @@ listen:
 #### The target block
 - `enabled`: If the target is enabled. It will be skipped when set to false
 - `template`: The name of the template which is used for the body. See [templates](#templates)
-- `shoutrrrurl`: The [shoutrrr](https://containrrr.dev/shoutrrr/v0.5/) URL to use for form submissions
+- `shoutrrrurl`: The [shoutrrr](https://containrrr.dev/shoutrrr/v0.5/) URL to use for form submissions. Additional information on how to get the URLs can be found [here](https://containrrr.dev/shoutrrr/v0.5/services/overview/)
 - `params`: Additional parameters which are also passed to the templating engine as `.params.<key>`. This can be useful when using the same template for multiple targets.
 
 # Templates
