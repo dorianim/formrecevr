@@ -18,6 +18,9 @@
     <a href="https://codecov.io/gh/dorianim/formrecevr">
         <img src="https://codecov.io/gh/dorianim/formrecevr/branch/main/graph/badge.svg?token=LJLPYEELOP"/>
     </a>
+    <a href="https://codeclimate.com/github/dorianim/formrecevr/maintainability">
+        <img src="https://api.codeclimate.com/v1/badges/72af8e8e7fa64952c338/maintainability" />
+    </a>
 </p>
 
 Formrecevr (pronunced "Form receiver") is a simple and lightweight from receiver backend primarily designed for (but not limited to) static websites. It is inspired by [formspree.io](formspree.io) but it is simpler, self-hosted and doesn't have a frontend.
