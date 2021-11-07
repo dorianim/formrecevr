@@ -13,7 +13,7 @@
         <img src="https://img.shields.io/docker/pulls/dorianim/formrecevr.svg" alt="Docker pulls" />
     </a>
     <a href="https://goreportcard.com/report/github.com/dorianim/formrecevr">
-        <img src="https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=flat" alt="Go report" />
+        <img src="https://goreportcard.com/badge/github.com/dorianim/formrecevr" alt="Go report" />
     </a>
     <a href="https://codecov.io/gh/dorianim/formrecevr">
         <img src="https://codecov.io/gh/dorianim/formrecevr/branch/main/graph/badge.svg?token=LJLPYEELOP"/>
