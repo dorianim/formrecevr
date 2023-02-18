@@ -47,16 +47,18 @@ func PostForm(router *gin.RouterGroup) {
 			return
 		}
 
-		var ip = c.Request.RemoteAddr
-		if config.GetConfig().Listen.UseForwardedHeaders {
-			ip = c.Request.Header.Get("X-Forwarded-For")
-		}
-		hcaptcha.Init(formConfig.HCaptcha.PrivateKey, formConfig.HCaptcha.Score, 5)
-		var r, _, e = hcaptcha.Confirm(c.Request.FormValue("h-captcha-response"), ip)
-		if !r {
-			c.JSON(http.StatusBadRequest, ResponseBody{Message: "Invalid captcha"})
-			log.Printf("Invalid captcha: %v", e)
-			return
+		if formConfig.HCaptcha.Enabled {
+			var ip = c.Request.RemoteAddr
+			if config.GetConfig().Listen.UseForwardedHeaders {
+				ip = c.Request.Header.Get("X-Forwarded-For")
+			}
+			hcaptcha.Init(formConfig.HCaptcha.PrivateKey, formConfig.HCaptcha.Score, 5)
+			var r, _, e = hcaptcha.Confirm(c.Request.FormValue("h-captcha-response"), ip)
+			if !r {
+				c.JSON(http.StatusBadRequest, ResponseBody{Message: "Invalid captcha"})
+				log.Printf("Invalid captcha: %v", e)
+				return
+			}
 		}
 
 		atLeastOneSuccess := false

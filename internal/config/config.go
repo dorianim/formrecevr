@@ -20,6 +20,7 @@ type TargetConfig struct {
 
 // HCaptchaConfig is the config for HCapthca
 type HCaptchaConfig struct {
+	Enabled    bool
 	PrivateKey string
 	Score      float32
 }
