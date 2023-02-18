@@ -18,17 +18,25 @@ type TargetConfig struct {
 	Params      map[string]interface{}
 }
 
+// HCaptchaConfig is the config for HCapthca
+type HCaptchaConfig struct {
+	PrivateKey string
+	Score      float32
+}
+
 // FormConfig is the config of a form
 type FormConfig struct {
-	Enabled bool
-	ID      string
-	Targets []*TargetConfig
+	Enabled  bool
+	ID       string
+	HCaptcha HCaptchaConfig
+	Targets  []*TargetConfig
 }
 
 // ListenConfig is for the server
 type ListenConfig struct {
-	Host string
-	Port int
+	Host                string
+	Port                int
+	UseForwardedHeaders bool
 }
 
 // Config is the type which contains all above sub-configs

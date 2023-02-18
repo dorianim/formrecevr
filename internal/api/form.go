@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/dorianim/formrecevr/internal/config"
 	"github.com/dorianim/formrecevr/internal/template"
 	"github.com/gin-gonic/gin"
+	"github.com/r7com/go-hcaptcha"
 )
 
 // ResponseBody is the body of a response
@@ -42,6 +44,18 @@ func PostForm(router *gin.RouterGroup) {
 		if err != nil {
 			c.JSON(http.StatusBadRequest, ResponseBody{Message: "Malformed form data"})
 			log.Printf("Error parsing submited form: %v", err)
+			return
+		}
+
+		var ip = c.Request.RemoteAddr
+		if config.GetConfig().Listen.UseForwardedHeaders {
+			ip = c.Request.Header.Get("X-Forwarded-For")
+		}
+		hcaptcha.Init(formConfig.HCaptcha.PrivateKey, formConfig.HCaptcha.Score, 5)
+		var r, _, e = hcaptcha.Confirm(c.Request.FormValue("h-captcha-response"), ip)
+		if !r {
+			c.JSON(http.StatusBadRequest, ResponseBody{Message: "Invalid captcha"})
+			log.Printf("Invalid captcha: %v", e)
 			return
 		}
 
@@ -94,6 +108,7 @@ func PostForm(router *gin.RouterGroup) {
 func getForm(formID string) *config.FormConfig {
 	config := config.GetConfig()
 	for _, form := range config.Forms {
+		fmt.Println(form.ID, formID, form.Enabled)
 		if form.ID == formID && form.Enabled {
 			return form
 		}
