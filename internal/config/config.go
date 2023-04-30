@@ -116,6 +116,11 @@ func DefaultConfig() *Config {
 			{
 				Enabled: false,
 				ID:      "Example",
+				HCaptcha: HCaptchaConfig{
+					Enabled:    false,
+					PrivateKey: "",
+					Score:      0.0,
+				},
 				Targets: []*TargetConfig{
 					{
 						Enabled:     false,

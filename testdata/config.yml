@@ -5,6 +5,6 @@ forms:
   - id: Example
     enabled: false
     targets:
-    - enabled: false
-      template: default.html
-      shoutrrrurl: 'See: https://containrrr.dev/shoutrrr/v0.5/services/overview/'
+      - enabled: false
+        template: default.html
+        shoutrrrurl: "See: https://containrrr.dev/shoutrrr/v0.5/services/overview/"
