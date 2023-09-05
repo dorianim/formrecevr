@@ -17,7 +17,6 @@ type TokenValidateResponse struct {
 	ErrorCodes []string `json:"error-codes"`
 	Success    bool     `json:"success"`
 	Action     string   `json:"action"`
-	CData      int      `json:"cdata"`
 }
 
 func ValidateTurnstileToken(token string, secret string, remoteIp string) (bool, error) {
