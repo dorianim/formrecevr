@@ -9,7 +9,6 @@ import (
 	"github.com/dorianim/formrecevr/internal/config"
 	"github.com/dorianim/formrecevr/internal/template"
 	"github.com/gin-gonic/gin"
-	"github.com/r7com/go-hcaptcha"
 )
 
 // ResponseBody is the body of a response
@@ -47,16 +46,23 @@ func PostForm(router *gin.RouterGroup) {
 			return
 		}
 
-		if formConfig.HCaptcha.Enabled {
+		if formConfig.Turnstile.Enabled {
+			fmt.Println("Validating captcha")
 			var ip = c.Request.RemoteAddr
 			if config.GetConfig().Listen.UseForwardedHeaders {
 				ip = c.Request.Header.Get("X-Forwarded-For")
 			}
-			hcaptcha.Init(formConfig.HCaptcha.PrivateKey, formConfig.HCaptcha.Score, 5)
-			var r, _, e = hcaptcha.Confirm(c.Request.FormValue("h-captcha-response"), ip)
-			if !r {
+
+			success, err := ValidateTurnstileToken(c.Request.Form.Get("cf-turnstile-response"), formConfig.Turnstile.SecretKey, ip)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, ResponseBody{Message: "Internal server error"})
+				log.Printf("Error validating captcha: %v", err)
+				return
+			}
+
+			if !success {
 				c.JSON(http.StatusBadRequest, ResponseBody{Message: "Invalid captcha"})
-				log.Printf("Invalid captcha: %v", e)
+				log.Printf("Invalid captcha!")
 				return
 			}
 		}
@@ -69,6 +75,10 @@ func PostForm(router *gin.RouterGroup) {
 
 			templateData := make(map[string]interface{})
 			for k, v := range c.Request.Form {
+				if k == "cf-turnstile-response" {
+					continue
+				}
+
 				if len(v) == 1 {
 					templateData[k] = v[0]
 				} else {

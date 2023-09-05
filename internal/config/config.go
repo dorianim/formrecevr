@@ -18,19 +18,18 @@ type TargetConfig struct {
 	Params      map[string]interface{}
 }
 
-// HCaptchaConfig is the config for HCapthca
-type HCaptchaConfig struct {
-	Enabled    bool
-	PrivateKey string
-	Score      float32
+// TurnstileConfig is the config for HCapthca
+type TurnstileConfig struct {
+	Enabled   bool
+	SecretKey string
 }
 
 // FormConfig is the config of a form
 type FormConfig struct {
-	Enabled  bool
-	ID       string
-	HCaptcha HCaptchaConfig
-	Targets  []*TargetConfig
+	Enabled   bool
+	ID        string
+	Turnstile TurnstileConfig
+	Targets   []*TargetConfig
 }
 
 // ListenConfig is for the server
@@ -116,10 +115,9 @@ func DefaultConfig() *Config {
 			{
 				Enabled: false,
 				ID:      "Example",
-				HCaptcha: HCaptchaConfig{
-					Enabled:    false,
-					PrivateKey: "",
-					Score:      0.0,
+				Turnstile: TurnstileConfig{
+					Enabled:   false,
+					SecretKey: "",
 				},
 				Targets: []*TargetConfig{
 					{
